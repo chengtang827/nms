@@ -13,7 +13,7 @@ for i = 1:length(shift_neurons)
     index = shift_neurons(i);
     tr1 = session(index,1);
     n_trials = length(trials(tr1).val);
-    tmp = squeeze(dataset(i,1:n_trials,:));
+    tmp = squeeze(dataset(index,1:n_trials,:));
     tar = AssignTrialLabel(trials(tr1).val,1);
     for j = 1:length(unique(tar))
         ind_tar = tar==j;

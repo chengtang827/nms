@@ -5,7 +5,7 @@ Args = struct('RedoLevels',0, 'SaveLevels',0, 'Auto',1, 'ArgsOnly',0,'stimulus',
     'pre',-300,'post',2600);
 Args.flags = {'Auto','ArgsOnly'};
 % The arguments which can be neglected during arguments checking
-Args.DataCheckArgs = {}; 
+Args.DataCheckArgs = {'binLen','pre','post'}; 
 
 [Args,modvarargin] = getOptArgs(varargin,Args, ...
     'subtract',{'RedoLevels','SaveLevels'}, ...
@@ -52,7 +52,7 @@ data.numSets = length(shift_neurons);
 data.Args = Args;
 data.shift_neurons = shift_neurons;
 data.resp = resp;
-
+data.bins = bins_overlap;
 
 % create nptdata so we can inherit from it
 

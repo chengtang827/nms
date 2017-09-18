@@ -50,7 +50,7 @@ load('dataset_overlapbins_fefdl.mat');
 % these are fields that are useful for most objects
 data.numSets = length(shift_neurons);
 data.Args = Args;
-data.shift_neurons = shift_neurons;
+%data.shift_neurons = shift_neurons;
 data.resp = resp;
 data.bins = bins_overlap;
 

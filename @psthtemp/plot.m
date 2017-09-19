@@ -93,9 +93,9 @@ switch Args.PeakOnly
             subplot(3,3,location(i));
             
             if i==r2Ind
-                line([delay2,delay2+l_resp],[resp2_mean(i),resp2_mean(i)],'Color',[1,0,0]);
+                line([delay2-50,delay2+l_resp-50],[resp2_mean(i),resp2_mean(i)],'Color',[1,0,0]);
             else
-                line([delay2,delay2+l_resp],[resp2_mean(i),resp2_mean(i)],'Color',[0,0,0]);
+                line([delay2-50,delay2+l_resp-50],[resp2_mean(i),resp2_mean(i)],'Color',[0,0,0]);
             end
         end
         
@@ -106,9 +106,9 @@ switch Args.PeakOnly
                 subplot(3,3,location(i));
                 
                 if i==r1Ind
-                    line([delay1+(j-1)*s_resp,delay1+l_resp+(j-1)*s_resp],[resp1_mean(i,j),resp1_mean(i,j)],'Color',[1,0,0])
+                    line([delay1+(j-1)*s_resp-50,delay1+l_resp+(j-1)*s_resp-50],[resp1_mean(i,j),resp1_mean(i,j)],'Color',[1,0,0])
                 else
-                    line([delay1+(j-1)*s_resp,delay1+l_resp+(j-1)*s_resp],[resp1_mean(i,j),resp1_mean(i,j)],'Color',[0,0,0])
+                    line([delay1+(j-1)*s_resp-50,delay1+l_resp+(j-1)*s_resp-50],[resp1_mean(i,j),resp1_mean(i,j)],'Color',[0,0,0])
                 end
             end
         end
@@ -123,9 +123,9 @@ switch Args.PeakOnly
         
         subplot(3,3,location(r2Ind(1)));
         if sig_diff
-            line([delay2,delay2+l_resp],[resp2_mean(r2Ind(1)),resp2_mean(r2Ind(1))],'Color',[1,0,0]);
+            line([delay2-50,delay2+l_resp-50],[resp2_mean(r2Ind(1)),resp2_mean(r2Ind(1))],'Color',[1,0,0]);
         else
-            line([delay2,delay2+l_resp],[resp2_mean(r2Ind(1)),resp2_mean(r2Ind(1))],'Color',[0,0,0]);
+            line([delay2-50,delay2+l_resp-50],[resp2_mean(r2Ind(1)),resp2_mean(r2Ind(1))],'Color',[0,0,0]);
         end
         
         for j = 1:n_resp
@@ -136,10 +136,10 @@ switch Args.PeakOnly
             subplot(3,3,location(r1Ind(1)));
             
             if sig_diff
-                line([delay1+(j-1)*s_resp,delay1+l_resp+(j-1)*s_resp],[resp1_mean(r1Ind(1),j),resp1_mean(r1Ind(1),j)],'Color',[1,0,0]);
+                line([delay1+(j-1)*s_resp-50,delay1+l_resp+(j-1)*s_resp-50],[resp1_mean(r1Ind(1),j),resp1_mean(r1Ind(1),j)],'Color',[1,0,0]);
                 
             else
-                line([delay1+(j-1)*s_resp,delay1+l_resp+(j-1)*s_resp],[resp1_mean(r1Ind(1),j),resp1_mean(r1Ind(1),j)],'Color',[0,0,0]);
+                line([delay1+(j-1)*s_resp-50,delay1+l_resp+(j-1)*s_resp-50],[resp1_mean(r1Ind(1),j),resp1_mean(r1Ind(1),j)],'Color',[0,0,0]);
                 
             end
             

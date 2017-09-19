@@ -2,7 +2,7 @@ function [obj, varargout] = psthtemp(varargin)
 
 
 Args = struct('RedoLevels',0, 'SaveLevels',0, 'Auto',1, 'ArgsOnly',0,'stimulus','target','binLen',50,...
-    'pre',-300,'post',2600);
+    'pre',-250,'post',2650);
 Args.flags = {'Auto','ArgsOnly'};
 % The arguments which can be neglected during arguments checking
 Args.DataCheckArgs = {'binLen','pre','post'}; 

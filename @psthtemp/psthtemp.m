@@ -42,7 +42,7 @@ function obj = createObject(Args,varargin)
 
 load('dataset_overlapbins_fefdl.mat');
 
-[shift_neurons, resp] = nms_shift(dataset_dl, trials, session_dl, bins_overlap);
+[shift_neurons, spike] = nms_shift(dataset_dl, trials, session_dl, bins_overlap);
 
 
 
@@ -50,8 +50,7 @@ load('dataset_overlapbins_fefdl.mat');
 % these are fields that are useful for most objects
 data.numSets = length(shift_neurons);
 data.Args = Args;
-%data.shift_neurons = shift_neurons;
-data.resp = resp;
+data.spike = spike;
 data.bins = bins_overlap;
 
 % create nptdata so we can inherit from it

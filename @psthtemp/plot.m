@@ -3,9 +3,9 @@ function [obj, varargout] = plot(obj,varargin)
 %   OBJ = plot(OBJ) creates a raster plot of the neuronal
 %   response.
 
-Args = struct('UnequalVar',0,'PeakOnly',0,'n_resp',12,'l_resp',500,'s_resp',100,'GroupPlots',1,'GroupPlotIndex',1,'Color','b', ...
+Args = struct('UnequalVar',0,'Analysis',2,'n_resp',18,'l_resp',100,'s_resp',100,'GroupPlots',1,'GroupPlotIndex',1,'Color','b', ...
     'ReturnVars',{''}, 'ArgsOnly',0);
-Args.flags = {'ArgsOnly','PeakOnly','UnequalVar'};
+Args.flags = {'ArgsOnly','UnequalVar'};
 [Args,~] = getOptArgs(varargin,Args);
 
 % if user select 'ArgsOnly', return only Args structure for an empty object
@@ -31,8 +31,8 @@ else
     var = 'equal';
 end
 
-delay1 = 700;
-delay2 = 1900;
+delay1 = 750;
+delay2 = 1950;
 
 spike_all = obj.data.spike;
 
@@ -84,7 +84,7 @@ end
 
 resp1_mean =  cellfun(@mean,resp1);
 resp2_mean = cellfun(@mean,resp2);
-switch Args.PeakOnly
+switch Args.Analysis
     case 0 % show all responses and highlight the peak
         %compare the responses
         
@@ -128,25 +128,47 @@ switch Args.PeakOnly
             line([delay2-50,delay2+l_resp-50],[resp2_mean(r2Ind(1)),resp2_mean(r2Ind(1))],'Color',[0,0,0]);
         end
         
+        
+        
         for j = 1:n_resp
             [~,r1Ind] = sort(resp1_mean(:,j),'descend');
             
             %peform t-test with the second highest peak
-            [sig_diff,p] = ttest2(resp1{r1Ind(1),j},resp1{r1Ind(2),j},'vartype',var);
+            [sig_diff,~] = ttest2(resp1{r1Ind(1),j},resp1{r1Ind(2),j},'vartype',var);
             subplot(3,3,location(r1Ind(1)));
             
             if sig_diff
                 line([delay1+(j-1)*s_resp-50,delay1+l_resp+(j-1)*s_resp-50],[resp1_mean(r1Ind(1),j),resp1_mean(r1Ind(1),j)],'Color',[1,0,0]);
-                
             else
                 line([delay1+(j-1)*s_resp-50,delay1+l_resp+(j-1)*s_resp-50],[resp1_mean(r1Ind(1),j),resp1_mean(r1Ind(1),j)],'Color',[0,0,0]);
-                
             end
             
+            
+        end
+        
+    case 2
+        %plot the top 3 in red, bottom 3 in green
+        [~,r2Ind] = sort(resp2_mean,'descend');
+        for i = 1:3
+            subplot(3,3,location(r2Ind(i)));
+            line([delay2-50,delay2+l_resp-50],[resp2_mean(r2Ind(i)),resp2_mean(r2Ind(i))],'Color',[1-0.2*i,0,0]);
+            subplot(3,3,location(r2Ind(end+1-i)));
+            line([delay2-50,delay2+l_resp-50],[resp2_mean(r2Ind(end+1-i)),resp2_mean(r2Ind(end+1-i))],'Color',[0,1-0.2*i,0]);
+            
+            
+        end
+        
+        for j = 1:n_resp
+            [~,r1Ind] = sort(resp1_mean(:,j),'descend');
+            for i = 1:3
+                subplot(3,3,location(r1Ind(i)));
+                line([delay1+(j-1)*s_resp-50,delay1+l_resp+(j-1)*s_resp-50],[resp1_mean(r1Ind(i),j),resp1_mean(r1Ind(i),j)],'Color',[1-0.2*i,0,0]);
+                subplot(3,3,location(r1Ind(end+1-i)));
+                line([delay1+(j-1)*s_resp-50,delay1+l_resp+(j-1)*s_resp-50],[resp1_mean(r1Ind(end+1-i),j),resp1_mean(r1Ind(end+1-i),j)],'Color',[0,1-0.2*i,0]);
+                
+            end
         end
 end
-
-
 
 
 

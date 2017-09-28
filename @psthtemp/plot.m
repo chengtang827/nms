@@ -3,7 +3,7 @@ function [obj, varargout] = plot(obj,varargin)
 %   OBJ = plot(OBJ) creates a raster plot of the neuronal
 %   response.
 
-Args = struct('UnequalVar',0,'Analysis',2,'n_resp',18,'l_resp',100,'s_resp',100,'GroupPlots',1,'GroupPlotIndex',1,'Color','b', ...
+Args = struct('UnequalVar',0,'Analysis',4,'n_resp',20,'l_resp',100,'s_resp',100,'GroupPlots',1,'GroupPlotIndex',1,'Color','b', ...
     'ReturnVars',{''}, 'ArgsOnly',0);
 Args.flags = {'ArgsOnly','UnequalVar'};
 [Args,~] = getOptArgs(varargin,Args);
@@ -31,8 +31,8 @@ else
     var = 'equal';
 end
 
-delay1 = 750;
-delay2 = 1950;
+delay1 = 700;
+delay2 = 1900;
 
 spike_all = obj.data.spike;
 
@@ -60,6 +60,7 @@ end
 
 resp1 = cell(length(location),n_resp);
 resp2 = cell(length(location),1);
+
 for i = 1: length(location)
     subplot(3,3,location(i));
     plot(pre:binLen:post,spike_n_mean{i});
@@ -134,7 +135,7 @@ switch Args.Analysis
             [~,r1Ind] = sort(resp1_mean(:,j),'descend');
             
             %peform t-test with the second highest peak
-            [sig_diff,~] = ttest2(resp1{r1Ind(1),j},resp1{r1Ind(2),j},'vartype',var);
+            [sig_diff,p] = ttest2(resp1{r1Ind(1),j},resp1{r1Ind(2),j},'vartype',var);
             subplot(3,3,location(r1Ind(1)));
             
             if sig_diff
@@ -147,7 +148,7 @@ switch Args.Analysis
         end
         
     case 2
-        %plot the top 3 in red, bottom 3 in green
+        %plot the most 3 in red, least 3 in green
         [~,r2Ind] = sort(resp2_mean,'descend');
         for i = 1:3
             subplot(3,3,location(r2Ind(i)));
@@ -168,6 +169,99 @@ switch Args.Analysis
                 
             end
         end
+        
+    case 3
+        %compare the most/least locations
+        [~,r2Ind] = sort(resp2_mean,'descend');
+        
+        diff = resp2_mean(r2Ind(1))-resp2_mean(r2Ind(end));
+        
+        subplot(3,3,location(r2Ind(1)));
+        line([delay2-50,delay2+l_resp-50],[resp2_mean(r2Ind(1)),resp2_mean(r2Ind(1))],'Color',[1,0,0]);
+        line([delay2,delay2],[resp2_mean(r2Ind(1)),resp2_mean(r2Ind(1))-diff],'Color',[1,0,0]);
+        
+        subplot(3,3,location(r2Ind(end)));
+        line([delay2-50,delay2+l_resp-50],[resp2_mean(r2Ind(end)),resp2_mean(r2Ind(end))],'Color',[0,1,0]);
+        
+        for j = 1:n_resp
+            [~,r1Ind] = sort(resp1_mean(:,j),'descend');
+            
+            diff = resp1_mean(r1Ind(1),j) - resp1_mean(r1Ind(end),j);
+            
+            subplot(3,3,location(r1Ind(1)));
+            line([delay1+(j-1)*s_resp-50,delay1+l_resp+(j-1)*s_resp-50],[resp1_mean(r1Ind(1),j),resp1_mean(r1Ind(1),j)],'Color',[1,0,0]);
+            line([delay1+(j-1)*s_resp,delay1+(j-1)*s_resp],[resp1_mean(r1Ind(1),j),resp1_mean(r1Ind(1),j)-diff],'Color',[1,0,0]);
+            
+            
+            subplot(3,3,location(r1Ind(end)));
+            line([delay1+(j-1)*s_resp-50,delay1+l_resp+(j-1)*s_resp-50],[resp1_mean(r1Ind(end),j),resp1_mean(r1Ind(end),j)],'Color',[0,1,0]);
+        end
+        
+    case 4
+        %iterative anova1 test to group locations
+        %if there is only one group, line is black
+        
+        
+        info = cell(n_resp,2);
+        %delay1
+        for i = 1:n_resp
+            [~,r1Ind] = sort(resp1_mean(:,i),'descend');
+            
+            data = [resp1{r1Ind(1),i}];
+            flag = ones(length(resp1{r1Ind(1),i}),1);
+            total = length(r1Ind);
+            current = 1;
+            group = {r1Ind(1)};
+            pvalues = {};
+            while current~=total
+                another = 0;
+                for j = current+1:total
+                    data = [data;resp1{r1Ind(j),i}];
+                    flag = [flag;ones(length(resp1{r1Ind(j),i}),1)*j];
+                    [h, ~] = anova1(data, flag,'off');
+                    if h>0.05
+                        group{end} = [group{end} r1Ind(j)];
+                    else
+                        another = 1;
+                        pvalues{end+1} = h;
+                        break;
+                    end
+                end
+                current = j;
+                if another==1
+                    group{end+1} = r1Ind(current);
+                    data = [resp1{r1Ind(current),i}];
+                    flag = ones(length(resp1{r1Ind(current),i}),1)*j;
+                end
+            end
+            
+            for j = 1:length(group)
+                g = group{j};
+                for k = 1:length(g)
+                    subplot(3,3,location(g(k)));
+                    c = [0,0,0];
+                    try
+                        thickness = 3+2^((0.05-pvalues{j})*80);
+                    catch
+                        if length(group)~=1
+                            thickness = 3+2^((0.05-pvalues{end})*80);
+                        else
+                            thickness = 3;
+                        end
+                    end
+                    
+                    if length(group)~=1
+                        bc= de2bi(j);
+                        c(1:length(bc)) = bc;
+                        
+                    end
+                    line([delay1+(i-1)*s_resp-50,delay1+l_resp+(i-1)*s_resp-50],[resp1_mean(g(k),i),resp1_mean(g(k),i)],'Color',c,'Linewidth',thickness);
+                end
+            end
+            info{i,1} = group;
+            info{i,2} = pvalues;
+        end
+        SelectivityAnalysis(psthtemp,info,location);
 end
 
 

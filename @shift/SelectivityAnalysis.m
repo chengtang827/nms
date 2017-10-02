@@ -89,31 +89,6 @@ for i = 1:length(info)
 end
 
 
-figure(2);
-clf;
-for i = 1:length(location)
-    subplot(3,3,location(i));
-    
-    ymax = max(fisher);
-    
-    
-    plot(700:100:2600,fisher);
-    xlim([-250,2650]);
-    ylim([0,ymax]);
-    line([0,0],[0,ymax],'Color','b');
-    line([300,300],[0,ymax],'Color','b');
-    line([1300,1300],[0,ymax],'Color','b');
-    line([1600,1600],[0,ymax],'Color','b');
-    for j = 1:length(info)
-        c = [0,0,0];
-        if grouping(i,j)~=-1
-            bc = de2bi(grouping(i,j));
-            c(1:length(bc)) = bc;
-            line([700+(j-1)*100-50,700+100+(j-1)*100-50],[0,0],'Color',c,'Linewidth',3);
-        end
-    end
-end
-
 %summarize the grouping of this neuron
 group_info = cell(length(location),1);
 for i = 1:length(location)

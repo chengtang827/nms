@@ -1,11 +1,10 @@
-function [obj, varargout] = psthtemp(varargin)
+function [obj, varargout] = shift(varargin)
 
 
-Args = struct('RedoLevels',0, 'SaveLevels',0, 'Auto',1, 'ArgsOnly',0,'stimulus','target','binLen',50,...
-    'pre',-250,'post',2650);
+Args = struct('RedoLevels',0, 'SaveLevels',0, 'Auto',1, 'ArgsOnly',0);
 Args.flags = {'Auto','ArgsOnly'};
 % The arguments which can be neglected during arguments checking
-Args.DataCheckArgs = {'binLen','pre','post'}; 
+Args.DataCheckArgs = {}; 
 
 [Args,modvarargin] = getOptArgs(varargin,Args, ...
     'subtract',{'RedoLevels','SaveLevels'}, ...
@@ -14,9 +13,9 @@ Args.DataCheckArgs = {'binLen','pre','post'};
 
 % variable specific to this class. Store in Args so they can be easily
 % passed to createObject and createEmptyObject
-Args.classname = 'psthtemp';
+Args.classname = 'shift';
 Args.matname = [Args.classname '.mat'];
-Args.matvarname = 'pst';
+Args.matvarname = 'sh';
 
 % To decide the method to create or load the object
 command = checkObjCreate('ArgsC',Args,'narginC',nargin,'firstVarargin',varargin);
@@ -40,18 +39,20 @@ end
 
 function obj = createObject(Args,varargin)
 
-load('dataset_overlapbins_fefdl.mat');
+eval('pst = psthtemp(''auto'')');
 
-[shift_neurons, spike] = nms_shift(dataset_dl, trials, session_dl, bins_overlap);
+shift_info = shiftAnalysis(shift,pst);
+
+
+
 
 
 
 % this is a valid object
 % these are fields that are useful for most objects
-data.numSets = length(shift_neurons);
+data.numSets = 1;
 data.Args = Args;
-data.spike = spike;
-data.bins = bins_overlap;
+data.shift_info = shift_info;
 
 % create nptdata so we can inherit from it
 

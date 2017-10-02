@@ -261,7 +261,7 @@ switch Args.Analysis
             info{i,1} = group;
             info{i,2} = pvalues;
         end
-        SelectivityAnalysis(psthtemp,info,location);
+        SelectivityAnalysis(psthtemp,info,location,resp1);
 end
 
 

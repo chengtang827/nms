@@ -1,11 +1,10 @@
-function [obj, varargout] = psthtemp(varargin)
+function [obj, varargout] = slope(varargin)
 
 
-Args = struct('RedoLevels',0, 'SaveLevels',0, 'Auto',1, 'ArgsOnly',0,'stimulus','target','binLen',50,...
-    'pre',-250,'post',2650,'minLen',4);
+Args = struct('RedoLevels',0, 'SaveLevels',0, 'Auto',1, 'ArgsOnly',0);
 Args.flags = {'Auto','ArgsOnly'};
 % The arguments which can be neglected during arguments checking
-Args.DataCheckArgs = {'binLen','pre','post','minLen'}; 
+Args.DataCheckArgs = {};
 
 [Args,modvarargin] = getOptArgs(varargin,Args, ...
     'subtract',{'RedoLevels','SaveLevels'}, ...
@@ -14,13 +13,13 @@ Args.DataCheckArgs = {'binLen','pre','post','minLen'};
 
 % variable specific to this class. Store in Args so they can be easily
 % passed to createObject and createEmptyObject
-Args.classname = 'psthtemp';
+Args.classname = 'slope';
 Args.matname = [Args.classname '.mat'];
-Args.matvarname = 'pst';
+Args.matvarname = 'sl';
 
 % To decide the method to create or load the object
 command = checkObjCreate('ArgsC',Args,'narginC',nargin,'firstVarargin',varargin);
-  
+
 if(strcmp(command,'createEmptyObjArgs'))
     varargout{1} = {'Args',Args};
     obj = createEmptyObject(Args);
@@ -40,19 +39,69 @@ end
 
 function obj = createObject(Args,varargin)
 
-load('dataset_overlapbins_fefdl.mat');
+eval(['pst = psthtemp(' char(39) 'auto' char(39)  ')']);
+slope_change = cell(pst.data.numSets,1);
 
-[shift_neurons, spike] = nms_shift(psthtemp, dataset_dl, trials, session_dl, bins_overlap);
+l_resp = 300;
+s_resp = 50;
+pre = -250;
+
+
+% for each cell
+for n = 1:pst.data.numSets
+    spike_n = pst.data.spike(n,:);    
+    
+    
+    if ~isempty(spike_n{end})
+        location = [1,2,3,4,6,7,8,9];
+    else
+        location = [1,2,3,4,6,7,8];
+    end
+    
+    slope_change{n} = zeros(length(location),size(spike_n_loc,2)-l_resp/s_resp);
+    
+    %for each location
+    for i = 1:length(location)
+        spike_n_loc = spike_n{i};
+        
+        %spike_n_loc_mean = spike_n_mean{i};
+        slope = zeros(size(spike_n_loc,1),size(spike_n_loc,2)-l_resp/s_resp);
+        
+        %for each single run
+        for j = 1:size(slope,1)
+            
+            %for each l_resp
+            for k = 1:size(slope,2)
+                x = pre+(k-1)*s_resp : s_resp : pre+(k-1)*s_resp+l_resp;
+                y = spike_n_loc(j,k:k+l_resp/s_resp);
+                f = fit(x',y','poly1');
+                slope(j,k) = f.p1*1000;
+            end
+        end
+        
+        slope_change_loc = zeros(size(slope,2),1);
+        
+        
+        %for each l_resp
+        for j = 1:size(slope,2)
+            slope_change_loc(j) = ttest(slope(:,j));
+        end
+        slope_change{n}(i,:) = slope_change_loc; 
+        fprintf('cell %d loc %d finished\n',n,i);
+    end
+   
+end
+
+
 
 
 
 % this is a valid object
 % these are fields that are useful for most objects
-data.numSets = length(shift_neurons);
+data.numSets = 1;
 data.Args = Args;
-data.spike = spike;
-data.bins = bins_overlap;
-
+data.shift_info = shift_info;
+data.fisher = fisher;
 % create nptdata so we can inherit from it
 
 n = nptdata(data.numSets,0,pwd);

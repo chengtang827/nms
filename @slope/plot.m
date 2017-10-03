@@ -3,7 +3,7 @@ function [obj, varargout] = plot(obj,varargin)
 %   OBJ = plot(OBJ) creates a raster plot of the neuronal
 %   response.
 
-Args = struct('UnequalVar',0,'Analysis',5,'n_resp',25,'l_resp',300,'s_resp',50,'GroupPlots',1,'GroupPlotIndex',1,'Color','b', ...
+Args = struct('UnequalVar',0,'Analysis',4,'n_resp',20,'l_resp',100,'s_resp',100,'GroupPlots',1,'GroupPlotIndex',1,'Color','b', ...
     'ReturnVars',{''}, 'ArgsOnly',0);
 Args.flags = {'ArgsOnly','UnequalVar'};
 [Args,~] = getOptArgs(varargin,Args);
@@ -36,7 +36,6 @@ delay2 = 1900;
 
 spike_all = obj.data.spike;
 
-minLen = obj.data.Args.minLen;
 binLen = obj.data.Args.binLen;
 pre = obj.data.Args.pre;
 post = obj.data.Args.post;
@@ -86,45 +85,7 @@ end
 
 resp1_mean =  cellfun(@mean,resp1);
 resp2_mean = cellfun(@mean,resp2);
-
-
 switch Args.Analysis
-    case 5
-        % slope analysis
-        % 300ms window, 300ms before and after distractor presentation
-%         t1 = 1300 - l_resp;% 1300 - 300
-%         t2 = 1600 + 100;% distractor offset + 100
-        
-        %for each location
-        for i = 1:length(location)
-            spike_n_loc = spike_n{i};
-            
-            %spike_n_loc_mean = spike_n_mean{i};
-            slope = zeros(size(spike_n_loc,1),size(spike_n_loc,2)-l_resp/s_resp);
-            
-            %for each single run
-            for j = 1:size(slope,1)
-                
-                %for each l_resp
-                for k = 1:size(slope,2)
-                    x = pre+(k-1)*s_resp : s_resp : pre+(k-1)*s_resp+l_resp;
-                    y = spike_n_loc(j,k:k+l_resp/s_resp);
-                    f = fit(x',y','poly1');
-                    slope(j,k) = f.p1*1000;
-                end
-            end
-            
-            slope_change = zeros(size(slope,2),1);
-            
-            
-            %for each l_resp
-            for j = 1:size(slope,2)
-                slope_change(j) = ttest(slope(:,j));
-            end
-           
-        end
-        
-        
     case 0 % show all responses and highlight the peak
         %compare the responses
         
@@ -300,10 +261,7 @@ switch Args.Analysis
             info{i,1} = group;
             info{i,2} = pvalues;
         end
-        SelectivityAnalysis(psthtemp,info,location,resp1,minLen);
-        
-        
-        
+        shift_info = SelectivityAnalysis(psthtemp,info,location,resp1);
 end
 
 

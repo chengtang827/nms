@@ -1,11 +1,14 @@
-function shift_info = shiftAnalysis(~,pst)
-shift_info = cell(pst.data.numSets,1);
+function [shift_info, fisher] = shiftAnalysis(~,pst,minLen)
+
+
 n_resp = 20;
 l_resp = 100;
 s_resp = 100;
 bins = pst.data.bins;
 delay1 = 700;
 
+shift_info = cell(pst.data.numSets,1);
+fisher = zeros(pst.data.numSets, n_resp);
 
 for n = 1:pst.data.numSets
     spike_n = pst.data.spike(n,:);
@@ -62,7 +65,7 @@ for n = 1:pst.data.numSets
         info{i,1} = group;
         info{i,2} = pvalues;
     end
-    shift_info{n} = SelectivityAnalysis(shift,info,location,resp);
+    [shift_info{n}, fisher(n,:)] = SelectivityAnalysis(shift,info,location,resp,minLen);
 end
 
 end

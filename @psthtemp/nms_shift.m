@@ -1,4 +1,4 @@
-function [shift_neurons, spike] = nms_shift( dataset,trials,session,bins )
+function [shift_neurons, spike] = nms_shift(~, dataset,trials,session,bins )
 [nms,~,~,d1_sel,d2_sel,~,~,~,~,~] = TwoWayAnova(dataset,trials,session,bins);
 
 % neurons shifted selectivity are those nms

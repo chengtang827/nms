@@ -1,6 +1,5 @@
-function shift_info = SelectivityAnalysis(~, info, location,resp)
+function SelectivityAnalysis(~, info, location,resp,minLen)
 
-minLen = 3;
 %if 3 consecutive windows have the same color, it is recognized as a group
 
 
@@ -141,7 +140,6 @@ for i = 1:length(location)
 end
 
 %summarize the shift of this neuron
-max_shift_len = 3;
 shift_info = cell(length(location),1);
 
 for i = 1:length(location)
@@ -166,12 +164,19 @@ for i = 1:length(location)
                 begi = pos;
             end
             
-
+            
         else %the group is -1
-            if group_info{i}(j).length>max_shift_len
+            if group_info{i}(j).length>=minLen
                 %means the gap is too big
-                g1 = [];
-                g2 = [];
+                if isempty(g1)
+                    g1 = group_info{i}(j).group;
+                    begi = pos;
+                elseif group_info{i}(j).group~=g1
+                    g2 = group_info{i}(j).group;
+                    en = pos - group_info{i}(j).length;
+                else
+                    begi = pos;
+                end
             else
                 continue;
             end

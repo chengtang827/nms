@@ -1,10 +1,10 @@
 function [obj, varargout] = shift(varargin)
 
 
-Args = struct('RedoLevels',0, 'SaveLevels',0, 'Auto',1, 'ArgsOnly',0);
+Args = struct('RedoLevels',0, 'SaveLevels',0, 'Auto',1, 'ArgsOnly',0,'minLen',4);
 Args.flags = {'Auto','ArgsOnly'};
 % The arguments which can be neglected during arguments checking
-Args.DataCheckArgs = {}; 
+Args.DataCheckArgs = {'minLen'}; 
 
 [Args,modvarargin] = getOptArgs(varargin,Args, ...
     'subtract',{'RedoLevels','SaveLevels'}, ...
@@ -39,9 +39,9 @@ end
 
 function obj = createObject(Args,varargin)
 
-eval('pst = psthtemp(''auto'')');
+eval(['pst = psthtemp(' char(39) 'minLen' char(39) ',' int2str(Args.minLen) ')']);
 
-shift_info = shiftAnalysis(shift,pst);
+[shift_info, fisher] = shiftAnalysis(shift,pst,Args.minLen);
 
 
 
@@ -53,7 +53,7 @@ shift_info = shiftAnalysis(shift,pst);
 data.numSets = 1;
 data.Args = Args;
 data.shift_info = shift_info;
-
+data.fisher = fisher;
 % create nptdata so we can inherit from it
 
 n = nptdata(data.numSets,0,pwd);

@@ -3,7 +3,7 @@ function [obj, varargout] = plot(obj,varargin)
 %   OBJ = plot(OBJ) creates a raster plot of the neuronal
 %   response.
 
-Args = struct('UnequalVar',0,'Analysis',5,'n_resp',25,'l_resp',300,'s_resp',50,'GroupPlots',1,'GroupPlotIndex',1,'Color','b', ...
+Args = struct('UnequalVar',0,'Analysis',1,'n_resp',25,'l_resp',300,'s_resp',50,'GroupPlots',1,'GroupPlotIndex',1,'Color','b', ...
     'ReturnVars',{''}, 'ArgsOnly',0);
 Args.flags = {'ArgsOnly','UnequalVar'};
 [Args,~] = getOptArgs(varargin,Args);

@@ -58,7 +58,7 @@ for n = 1:pst.data.numSets
         location = [1,2,3,4,6,7,8];
     end
     
-    slope_change{n} = zeros(length(location),size(spike_n_loc,2)-l_resp/s_resp);
+    slope_change{n} = zeros(length(location),size(spike_n{1},2)-l_resp/s_resp);
     
     %for each location
     for i = 1:length(location)
@@ -100,8 +100,7 @@ end
 % these are fields that are useful for most objects
 data.numSets = 1;
 data.Args = Args;
-data.shift_info = shift_info;
-data.fisher = fisher;
+data.slope_change = slope_change;
 % create nptdata so we can inherit from it
 
 n = nptdata(data.numSets,0,pwd);

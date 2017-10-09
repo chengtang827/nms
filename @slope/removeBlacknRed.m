@@ -20,6 +20,15 @@ for i = 2:length(index)
     end
 end
 
+%remove the first and last points of change no longer than minLenR
+index = find(slope==0);
+if index(1)<=minLenR+1
+    slope(1:index(1))=0;
+end
+
+if index(end)>=length(slope)-minLenR
+    slope(index(end):end) = 0;
+end
 end
 
 

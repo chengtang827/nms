@@ -4,12 +4,18 @@ slope_change = sl.data.slope_change;
 
 distribution = zeros(size(slope_change{1}));
 
+
 % clean
 for i = 1:length(slope_change)
     for j = 1:size(slope_change{i},1)
         slope_change{i}(j,:) = removeBlacknRed(slope, slope_change{i}(j,:),4,2);
+        %now just leave the starting and ending points of a change
+      %  slope_change{i}(j,:) = removeMid(slope, slope_change{i}(j,:));        
     end
 end
+
+
+
 
 %for each location
 for i = 1:size(distribution,1)
@@ -40,6 +46,7 @@ for i = 1: length(location)
     line([1600,1600],[0,ymax],'Color','b');
     hold on;
     scatter(pre+150:binLen:post-150,distribution(i,:));
+%     plot(pre+150:binLen:post-150,distribution(i,:));
 end
 
 

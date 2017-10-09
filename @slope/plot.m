@@ -66,6 +66,12 @@ for i = 1: length(location)
     slope_n_loc = obj.data.slope_change{n}(i,:);
     slope_n_loc = removeBlacknRed(slope, slope_n_loc,4,2);
     
+    %%%%
+%     slope_n_loc = removeMid(slope, slope_n_loc);
+    %
+%     slopee = removeMid2(slope, slope_n_loc);
+%     slope_n_loc = slopee(1,:) + slopee(2,:);
+    %%%%
     hold on;
     s=[];
     c= zeros(length(slope_n_loc),3);

@@ -1,6 +1,6 @@
 function slope = removeBlacknRed( ~,slope ,minLenB,minLenR )
 
-slope(isnan(slope)) = 0;
+
 
 %remove black no longer than minLenB
 index = find(slope==1);

@@ -3,7 +3,7 @@ function [obj, varargout] = plot(obj,varargin)
 %   OBJ = plot(OBJ) creates a raster plot of the neuronal
 %   response.
 
-Args = struct('UnequalVar',0,'Analysis',1,'n_resp',25,'l_resp',300,'s_resp',50,'GroupPlots',1,'GroupPlotIndex',1,'Color','b', ...
+Args = struct('UnequalVar',0,'Analysis',4,'n_resp',20,'l_resp',100,'s_resp',100,'GroupPlots',1,'GroupPlotIndex',1,'Color','b', ...
     'ReturnVars',{''}, 'ArgsOnly',0);
 Args.flags = {'ArgsOnly','UnequalVar'};
 [Args,~] = getOptArgs(varargin,Args);
@@ -294,13 +294,13 @@ switch Args.Analysis
                         c(1:length(bc)) = bc;
                         
                     end
-                    line([delay1+(i-1)*s_resp-50,delay1+l_resp+(i-1)*s_resp-50],[resp1_mean(g(k),i),resp1_mean(g(k),i)],'Color',c,'Linewidth',thickness);
+                    line([delay1+(i-1)*s_resp-50,delay1+l_resp+(i-1)*s_resp-50],[resp1_mean(g(k),i),resp1_mean(g(k),i)],'Color',c,'Linewidth',3);
                 end
             end
             info{i,1} = group;
             info{i,2} = pvalues;
         end
-        SelectivityAnalysis(psthtemp,info,location,resp1,minLen);
+        %SelectivityAnalysis(psthtemp,info,location,resp1,minLen);
         
         
         

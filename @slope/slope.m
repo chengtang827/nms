@@ -40,6 +40,8 @@ end
 function obj = createObject(Args,varargin)
 
 eval(['pst = psthtemp(' char(39) 'auto' char(39)  ')']);
+% load('psthtemp.mat');
+% pst = pste;
 slope_change = cell(pst.data.numSets,1);
 
 l_resp = 300;
@@ -98,7 +100,7 @@ end
 
 % this is a valid object
 % these are fields that are useful for most objects
-data.numSets = 1;
+data.numSets = pst.data.numSets;
 data.Args = Args;
 data.slope_change = slope_change;
 % create nptdata so we can inherit from it

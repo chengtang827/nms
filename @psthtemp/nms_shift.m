@@ -1,11 +1,11 @@
 function [shift_neurons, spike] = nms_shift(~, dataset,trials,session,bins )
-[nms,~,~,d1_sel,d2_sel,~,~,~,~,~] = TwoWayAnova(dataset,trials,session,bins);
+[nms,~,~,~,~,~,~,~,~,~] = TwoWayAnova(dataset,trials,session,bins);
 
 % neurons shifted selectivity are those nms
 % selective both in dl_sel and d2_sel
-temp = d1_sel(ismember(d1_sel,d2_sel));
-shift_neurons = nms(ismember(nms, temp));
-
+% temp = d1_sel(ismember(d1_sel,d2_sel));
+% shift_neurons = nms(ismember(nms, temp));
+shift_neurons = nms;
 
 %resp of the shifted neurons (neuron x location x bin)
 spike = cell(length(shift_neurons),8);

@@ -39,60 +39,31 @@ end
 
 function obj = createObject(Args,varargin)
 
-eval(['pst = psthtemp(' char(39) 'auto' char(39)  ')']);
+load('slope_dsbt.mat');
 % load('psthtemp.mat');
 % pst = pste;
-slope_change = cell(pst.data.numSets,1);
-
-l_resp = 300;
-s_resp = 50;
-pre = -250;
-
+slope_change = cell(sld.data.numSets,1);
 
 % for each cell
-for n = 1:pst.data.numSets
-    spike_n = pst.data.spike(n,:);    
+for i = 1: sld.data.numSets
+    tic;
+    slope_change_i = zeros(length(sld.data.slope{i}),...
+        size(sld.data.slope{i}{1},2));
     
-    
-    if ~isempty(spike_n{end})
-        location = [1,2,3,4,6,7,8,9];
-    else
-        location = [1,2,3,4,6,7,8];
+    % for each location
+    for j = 1:size(slope_change_i,1)
+        
+        % for each step
+        for k = 1:size(slope_change_i,2)
+            slope_change_i(j,k) = ttest(sld.data.slope{i}{j}(:,k));
+        end
     end
     
-    slope_change{n} = zeros(length(location),size(spike_n{1},2)-l_resp/s_resp);
-    
-    %for each location
-    for i = 1:length(location)
-        spike_n_loc = spike_n{i};
-        
-        %spike_n_loc_mean = spike_n_mean{i};
-        slope = zeros(size(spike_n_loc,1),size(spike_n_loc,2)-l_resp/s_resp);
-        
-        %for each single run
-        for j = 1:size(slope,1)
-            
-            %for each l_resp
-            for k = 1:size(slope,2)
-                x = pre+(k-1)*s_resp : s_resp : pre+(k-1)*s_resp+l_resp;
-                y = spike_n_loc(j,k:k+l_resp/s_resp);
-                f = fit(x',y','poly1');
-                slope(j,k) = f.p1*1000;
-            end
-        end
-        
-        slope_change_loc = zeros(size(slope,2),1);
-        
-        
-        %for each l_resp
-        for j = 1:size(slope,2)
-            slope_change_loc(j) = ttest(slope(:,j));
-        end
-        slope_change{n}(i,:) = slope_change_loc; 
-        fprintf('cell %d loc %d finished\n',n,i);
-    end
-   
+    slope_change{i} = slope_change_i;
+    toc;
+    fprintf('Cell %d\n',i);
 end
+   
 
 
 
@@ -100,7 +71,7 @@ end
 
 % this is a valid object
 % these are fields that are useful for most objects
-data.numSets = pst.data.numSets;
+data.numSets = sld.data.numSets;
 data.Args = Args;
 data.slope_change = slope_change;
 % create nptdata so we can inherit from it

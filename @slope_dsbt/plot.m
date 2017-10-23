@@ -3,7 +3,7 @@ function [obj, varargout] = plot(obj,varargin)
 %   OBJ = plot(OBJ) creates a raster plot of the neuronal
 %   response.
 
-Args = struct('GroupPlots',1,'GroupPlotIndex',1,'Color','b', ...
+Args = struct('NumBins',15,'GroupPlots',1,'GroupPlotIndex',1,'Color','b', ...
     'ReturnVars',{''}, 'ArgsOnly',0);
 Args.flags = {'ArgsOnly'};
 [Args,~] = getOptArgs(varargin,Args);
@@ -25,65 +25,56 @@ end
 
 % add code for plot options here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-eval(['pst = psthtemp(' char(39) 'auto' char(39)  ')']);
+NumBins = Args.NumBins;
 
+slope_n = obj.data.slope{n};
 
-spike_all = pst.data.spike;
-
-binLen = pst.data.Args.binLen;
-pre = pst.data.Args.pre;
-post = pst.data.Args.post;
-
-
-
-
-spike_n = spike_all(n,:);
-
-spike_n_mean = cellfun(@mean,spike_n,'UniformOutput',0);
-ymax = max(cellfun(@max,spike_n_mean));
-ymin = min(cellfun(@min,spike_n_mean(1:end-1)));
-
-if ~isempty(spike_n{end})
-    location = [1,2,3,4,6,7,8,9];
-else
+if length(slope_n) == 7
     location = [1,2,3,4,6,7,8];
+else
+    location = [1,2,3,4,6,7,8,9];
 end
 
+%identify ymin ymax
+% ymin = min(cellfun(@min, ...
+%     cellfun(@min,slope_n,'UniformOutput',false)));
+% ymax = max(cellfun(@max, ...
+%     cellfun(@max,slope_n,'UniformOutput',false)));
 
-
-for i = 1: length(location)
+%for each location
+for i = 1:length(location)
     subplot(3,3,location(i));
-    plot(pre:binLen:post,spike_n_mean{i});
-    xlim([pre,post]);
-    ylim([ymin, ymax]);
+    slope_ni = slope_n{i};
     
-    %draw target and distractor periods
-    line([0,0],[0,ymax],'Color','b');
-    line([300,300],[0,ymax],'Color','b');
-    line([1300,1300],[0,ymax],'Color','b');
-    line([1600,1600],[0,ymax],'Color','b');
+    ymin = min(min(slope_ni));
+    ymax = max(max(slope_ni));
     
-    slope_n_loc = obj.data.slope_change{n}(i,:);
-    slope_n_loc = removeBlacknRed(slope, slope_n_loc,4,2);
+    %convert to histogram
+    hist = [];
+    %for each step
+    for j = 1:size(slope_ni,2)
+        %TODO really need ymin ymax?
+        h = histogram(slope_ni(:,j),'BinLimits',[ymin ymax],'NumBins',NumBins);
+        hist = [hist flipud(h.Values')];
+    end
+    imagesc(hist);
+    set(gca, 'ytick',[]);
+    set(gca, 'xtick',[]);
     
-    %%%%
-%     slope_n_loc = removeMid(slope, slope_n_loc);
-    %
-%     slopee = removeMid2(slope, slope_n_loc);
-%     slope_n_loc = slopee(1,:) + slopee(2,:);
-    %%%%
-    hold on;
-    s=[];
-    c= zeros(length(slope_n_loc),3);
-    c(slope_n_loc==1,1) = 1;
+    %plot min max and 0
+    text(0,0,num2str(round(ymax)),...
+        'HorizontalAlignment','right','VerticalAlignment','cap');
+    text(0,NumBins,num2str(round(ymin)),...
+        'HorizontalAlignment','right','VerticalAlignment','cap');
+    text(0,ymax/((ymax-ymin)/NumBins),'0',...
+        'HorizontalAlignment','right','VerticalAlignment','cap');
     
-    scatter(pre+150:binLen:post-150,ones(length(slope_n_loc),1)*ymin,s,c);
+    %plot target and distractor
+    line([3,3],[ymin,ymax],'Color','w');
+    line([9,9],[ymin,ymax],'Color','w');
+    line([29,29],[ymin,ymax],'Color','w');
+    line([35,35],[ymin,ymax],'Color','w');
 end
-
-
-
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

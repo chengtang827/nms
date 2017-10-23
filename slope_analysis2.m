@@ -1,3 +1,5 @@
+%only look at start and end points
+
 clear;
 load('slope.mat');
 slope_change = sl.data.slope_change;

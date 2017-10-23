@@ -1,3 +1,5 @@
+%slope different from 0
+
 clear;
 load('slope.mat');
 %

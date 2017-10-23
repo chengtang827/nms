@@ -44,8 +44,6 @@ load('dataset_overlapbins_fefdl.mat');
 
 [shift_neurons, spike] = nms_shift(psthtemp, dataset_dl, trials, session_dl, bins_overlap);
 
-
-
 % this is a valid object
 % these are fields that are useful for most objects
 data.shift_neurons = shift_neurons;

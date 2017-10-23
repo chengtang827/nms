@@ -64,7 +64,7 @@ for n = 1:pst.data.numSets
     %size(spike_n{1},2)-l_resp/s_resp
     %for each location
     for i = 1:length(location)
-
+        tic;
         spike_n_loc = spike_n{i};
         
         %spike_n_loc_mean = spike_n_mean{i};
@@ -83,6 +83,7 @@ for n = 1:pst.data.numSets
         end        
         slope{n}{i} = slope_ni; 
         fprintf('cell %d loc %d finished\n',n,i);
+        toc;
     end
    
 end

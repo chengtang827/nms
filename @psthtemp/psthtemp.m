@@ -1,8 +1,8 @@
 function [obj, varargout] = psthtemp(varargin)
 
 
-Args = struct('RedoLevels',0, 'SaveLevels',0, 'Auto',1, 'ArgsOnly',0,'stimulus','target','binLen',50,...
-    'pre',-250,'post',2650,'minLen',4);
+Args = struct('RedoLevels',0, 'SaveLevels',0, 'Auto',1, 'ArgsOnly',0,'stimulus','target',...
+    'pre',-300,'post',2700,'binStep',50,'binLen',100);
 Args.flags = {'Auto','ArgsOnly'};
 % The arguments which can be neglected during arguments checking
 Args.DataCheckArgs = {'binLen','pre','post','minLen'}; 
@@ -42,7 +42,7 @@ function obj = createObject(Args,varargin)
 
 load('dataset_overlapbins_fefdl.mat');
 
-[shift_neurons, spike] = nms_shift(psthtemp, dataset_dl, trials, session_dl, bins_overlap);
+[shift_neurons, spike] = nms_shift(psthtemp, dataset_dl, trials, session_dl,bins_overlap);
 
 % this is a valid object
 % these are fields that are useful for most objects

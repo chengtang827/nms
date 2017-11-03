@@ -3,7 +3,7 @@ function [obj, varargout] = plot(obj,varargin)
 %   OBJ = plot(OBJ) creates a raster plot of the neuronal
 %   response.
 
-Args = struct('UnequalVar',0,'Analysis',4,'n_resp',20,'l_resp',100,'s_resp',100,'GroupPlots',1,'GroupPlotIndex',1,'Color','b', ...
+Args = struct('UnequalVar',0,'Analysis',-1,'n_resp',20,'l_resp',100,'s_resp',100,'GroupPlots',1,'GroupPlotIndex',1,'Color','b', ...
     'ReturnVars',{''}, 'ArgsOnly',0);
 Args.flags = {'ArgsOnly','UnequalVar'};
 [Args,~] = getOptArgs(varargin,Args);
@@ -36,11 +36,16 @@ delay2 = 1900;
 
 spike_all = obj.data.spike;
 
-minLen = obj.data.Args.minLen;
+% minLen = obj.data.Args.minLen;
 binLen = obj.data.Args.binLen;
+binStep = obj.data.Args.binStep;
 pre = obj.data.Args.pre;
 post = obj.data.Args.post;
 bins = obj.data.bins;
+
+pre = pre + binLen/2;
+post = post - binLen/2;
+
 
 n_resp = Args.n_resp;
 l_resp = Args.l_resp;
@@ -51,7 +56,7 @@ spike_n = spike_all(n,:);
 
 spike_n_mean = cellfun(@mean,spike_n,'UniformOutput',0);
 ymax = max(cellfun(@max,spike_n_mean));
-ymin = min(cellfun(@min,spike_n_mean(1:end-1)));
+ymin = min(cellfun(@min,spike_n_mean(1:end)));
 
 if ~isempty(spike_n{end})
     location = [1,2,3,4,6,7,8,9];
@@ -64,9 +69,9 @@ resp2 = cell(length(location),1);
 
 for i = 1: length(location)
     subplot(3,3,location(i));
-    plot(pre:binLen:post,spike_n_mean{i});
+    plot(pre:binStep:post,spike_n_mean{i});
     xlim([pre,post]);
-    ylim([ymin, ymax]);
+    ylim([0, ymax]);
     
     %draw target and distractor periods
     line([0,0],[0,ymax],'Color','b');
@@ -76,11 +81,11 @@ for i = 1: length(location)
     
     spike_n_loc = spike_n{i};
     %draw the response lines of stepwise 500 ms
-    for j = 1:n_resp
-        resp1{i,j} = mean(spike_n_loc(:,find(bins(2,:)==(delay1+(j-1)*s_resp)):find(bins(2,:)==(delay1+l_resp+(j-1)*s_resp))),2);
-    end
-    resp2{i} = mean(spike_n_loc(:,find(bins(2,:)==delay2):find(bins(2,:)==(delay2+l_resp))),2);
-    
+%     for j = 1:n_resp
+%         resp1{i,j} = mean(spike_n_loc(:,find(bins(2,:)==(delay1+(j-1)*s_resp)):find(bins(2,:)==(delay1+l_resp+(j-1)*s_resp))),2);
+%     end
+%     resp2{i} = mean(spike_n_loc(:,find(bins(2,:)==delay2):find(bins(2,:)==(delay2+l_resp))),2);
+%     
 end
 
 
@@ -89,6 +94,9 @@ resp2_mean = cellfun(@mean,resp2);
 
 
 switch Args.Analysis
+    case -1
+        % do nothing
+    
     case 5
         % slope analysis
         % 300ms window, 300ms before and after distractor presentation

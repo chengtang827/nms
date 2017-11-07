@@ -1,63 +1,3 @@
-%slope different from 0
-
-clear;
-load('slope.mat');
-%
-% load('slopee.mat');
-% sl = slopee;
-%
-slope_change = sl.data.slope_change;
-
-distribution = zeros(size(slope_change{1}));
-
-
-% clean
-for i = 1:length(slope_change)
-    for j = 1:size(slope_change{i},1)
-        slope_change{i}(j,:) = removeBlacknRed(slope, slope_change{i}(j,:),4,2);
-        %         slope_change{i}(j,(isnan(slope_change{i}(j,:))))= 0;
-        
-        %now just leave the starting and ending points of a change
-        %  slope_change{i}(j,:) = removeMid(slope, slope_change{i}(j,:));
-    end
-end
-
-
-
-
-%for each location
-for i = 1:size(distribution,1)
-    for j = 1:length(slope_change)
-        slope_n = slope_change{j};
-        
-        try
-            distribution(i,:) = distribution(i,:) + slope_n(i,:);
-        catch
-        end
-    end
-end
-
-location = [1,2,3,4,6,7,8,9];
-pre = -250;
-post = 2650;
-ymin = 0;
-ymax = max(max(distribution));
-binStep = 50;
-for i = 1: length(location)
-    subplot(3,3,location(i));
-    xlim([pre,post]);
-    
-    
-    line([0,0],[0,ymax],'Color','b');
-    line([300,300],[0,ymax],'Color','b');
-    line([1300,1300],[0,ymax],'Color','b');
-    line([1600,1600],[0,ymax],'Color','b');
-    hold on;
-    %     scatter(pre+150:binLen:post-150,distribution(i,:));
-    plot(pre+150:binStep:post-150,distribution(i,:));
-end
-
-%%
 %look at positive and negative slopes
 
 
@@ -146,7 +86,7 @@ for i = 1: length(location)
 end
 
 %shuffle
-shuffle = 1000;
+shuffle = 10000;
 start = 800;
 index = length(pre+binLen/2:binStep:start);
 interval = index:size(pos,2);
@@ -181,12 +121,11 @@ for i = 1:length(location)
     
     peak_pos = pos(i,interval)>prctile(null_pos,percentile);
     peak_neg = neg(i,interval)>prctile(null_neg,percentile);
-    
-    c_pos= zeros(length(x),3);
-    c_pos(peak_pos,1) = 1;
-        c_neg= zeros(length(x),3);
-    c_neg(peak_neg,3) = 1;
-    scatter(x,ones(1,length(x))*ymax,[],c_pos);
-    scatter(x,ones(1,length(x))*ymax-10,[],c_neg);
-end
+    y_pos = ones(length(x),1)*ymax;
+    y_neg = ones(length(x),1)*ymax-3;
+    y_pos(peak_pos==0) = NaN;
+    y_neg(peak_neg==0) = NaN;
 
+    plot(x,y_pos,'-.or');
+    plot(x,y_neg,'-.ob');
+end

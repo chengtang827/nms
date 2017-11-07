@@ -70,17 +70,45 @@ end
 save('slope120','slope120');
 
 %%
+clear;
 load('slope120.mat');
+load('dataset_overlapbins_fefdl.mat','st_dl');
+load('cmap.mat');
+colormap(cmap);
+ind = st_dl>3;
 slope120(slope120==0)=NaN;
-
+slope = slope120;
+slope = slope(ind,:,:);
+t1 = 9;
+t2 = 24;
+d1 = 74;
+d2 = 89;
+%%
+clear;
+load('slope300.mat');
+load('dataset_overlapbins_fefdl.mat','st_dl');
+ind = st_dl>1;
+slope = slope(ind,:,:);
+slope(slope==0)=NaN;
 colormap('jet');
-NumBins = 100;
+t1 = 3;
+t2 = 9;
+d1 = 29;
+d2 = 35;
+%%
+slope(slope>3) = 2.5;
+slope(slope<-3) = -2.5;
+
+NumBins = 6;
 location = [1,2,3,4,6,7,8];
-ymin = min(min(min(squeeze(slope120))));
-ymax = max(max(max(squeeze(slope120))));
+
+ymin = min(min(min(squeeze(slope))));
+ymax = max(max(max(squeeze(slope))));
 % for each location
-ymin = -120;
-ymax = 120;
+
+range = 3;
+ymin = -range;
+ymax = range;
 
 %find CLIM
 CLOW = 0;
@@ -90,8 +118,8 @@ for i = 1:length(location)
     
     hist = [];
     %for each step
-    for j = 1:size(slope120,3)
-        h = histogram(squeeze(slope120(:,i,j)),'BinLimits',[ymin ymax],'NumBins',NumBins);
+    for j = 1:size(slope,3)
+        h = histogram(squeeze(slope(:,i,j)),'BinLimits',[ymin ymax],'NumBins',NumBins);
         hist = [hist flipud(h.Values')];
     end
     CLOW = min(CLOW, min(min(hist)));
@@ -99,15 +127,16 @@ for i = 1:length(location)
 end
 
 % CLOW = 0;
-% CHIGH = 15;
+CLOW = 5;
+CHIGH = 25;
 
 for i = 1:length(location)
     subplot(3,3,location(i));
     
     hist = [];
     %for each step
-    for j = 1:size(slope120,3)
-        h = histogram(squeeze(slope120(:,i,j)),'BinLimits',[ymin ymax],'NumBins',NumBins);
+    for j = 1:size(slope,3)
+        h = histogram(squeeze(slope(:,i,j)),'BinLimits',[ymin ymax],'NumBins',NumBins);
         hist = [hist flipud(h.Values')];
     end
     imagesc(hist,[CLOW CHIGH]);
@@ -124,10 +153,9 @@ for i = 1:length(location)
         'HorizontalAlignment','right','VerticalAlignment','cap');
     
     %plot target and distractor
-    line([3,3],[ymin,ymax],'Color','w');
-    line([9,9],[ymin,ymax],'Color','w');
-    line([29,29],[ymin,ymax],'Color','w');
-    line([35,35],[ymin,ymax],'Color','w');
+    line([t1,t1],[0,NumBins+1],'Color','w','LineWidth',3);
+    line([t2,t2],[0,NumBins+1],'Color','w','LineWidth',3);
+    line([d1,d1],[0,NumBins+1],'Color','w','LineWidth',3);
+    line([d2,d2],[0,NumBins+1],'Color','w','LineWidth',3);
 end
-
 

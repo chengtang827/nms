@@ -25,11 +25,17 @@ for i = 1:size(std_err,1)
 end
 
 spike_n_mean = cellfun(@mean,spike_n,'UniformOutput',0);
+temp = zeros(size(std_err));
+for i = 1:size(temp,1)
+    temp(i,:) = spike_n_mean{i};
+end
+spike_n_mean = temp;
 
+upper = spike_n_mean + std_err;
+lower = spike_n_mean - std_err;
 
-
-ymax = max(cellfun(@max,spike_n_mean));
-ymin = min(cellfun(@min,spike_n_mean(1:end)));
+ymax = max(max(upper));
+ymin = min(min(lower));
 
 if ~isempty(spike_n{end})
     location = [1,2,3,4,6,7,8,9];
@@ -37,6 +43,7 @@ else
     location = [1,2,3,4,6,7,8];
 end
 
+ 
 
 for i = 1: length(location)
     subplot(3,3,location(i));
@@ -44,24 +51,23 @@ for i = 1: length(location)
     rectangle('Position',[1300,ymin,300,ymax],'FaceColor',[0.8,0.8,0.8],'EdgeColor','none');
     hold on;
     
-%     xlim([pre,post]);
-%     ylim([ymin, ymax]);
+    xlim([pre,post]);
+    ylim([ymin, ymax]);
     
     % plot the standard error range
-    upper = spike_n_mean{i}+std_err(i,:);
-    lower = spike_n_mean{i}-std_err(i,:);
     
-    patch([pre:binStep:post post:-binStep:pre],[lower fliplr(upper)],[0.8,0,0]);
-    plot(pre:binStep:post,spike_n_mean{i});
+    
+    patch([pre:binStep:post post:-binStep:pre],[lower(i,:) fliplr(upper(i,:))],[0.8,0.8,1],'EdgeColor','none');
+    plot(pre:binStep:post,spike_n_mean(i,:),'Color','b');
     if i~=6
         set(gca,'xtick',[]);
         set(gca,'ytick',[]);
     else
         set(gca,'xtick',[]);
-        text(0,0,'0','HorizontalAlignment','center','Rotation',45);
-        text(300,0,'0.3','HorizontalAlignment','center','Rotation',45);
-        text(1300,0,'1.3','HorizontalAlignment','center','Rotation',45);
-        text(1600,0,'1.6','HorizontalAlignment','center','Rotation',45);
+        text(0,ymin,'0','HorizontalAlignment','center','VerticalAlignment','top');
+        text(300,ymin,'0.3','HorizontalAlignment','center','VerticalAlignment','top');
+        text(1300,ymin,'1.3','HorizontalAlignment','center','VerticalAlignment','top');
+        text(1600,ymin,'1.6','HorizontalAlignment','center','VerticalAlignment','top');
     end
     
     if i==4

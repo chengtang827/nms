@@ -14,7 +14,6 @@ s_resp = 20;
 
 slope120 = zeros(size(spike,1),size(spike,2),size(spike{1},2)-l_resp/s_resp);
 
-% r2 = zeros(size(spike,1),size(spike,2),size(spike{1},2)-l_resp/s_resp);
 %for each cell
 for i = 1:size(slope120,1)
     tic;
@@ -43,20 +42,20 @@ for i = 1:size(slope120,1)
                 if conf(1,1)*conf(2,1)<=0 %interval contains 0
                     slope120(i,j,k) = 0;
                 else
-                    %                     % 100 shuffle
-                    %                     gd = zeros(100,1);
-                    %                     for l = 1:100
-                    %                         [~,temp] = fit(x',y(randperm(7))','poly1');
-                    %                         gd(l) = temp.rsquare;
-                    %                     end
-                    %
-                    %                     if g.rsquare>prctile(gd,95)
-                    %                         slope120(i,j,k) = f.p1*1000;
-                    % %                         r2(i,j,k) = g.rsquare;
-                    %                     else
-                    %                         slope120(i,j,k) = NaN;
-                    %                     end
-                    slope120(i,j,k) = f.p1*1000;
+                    % 100 shuffle
+%                     shuffle = 100;
+%                     gd = zeros(shuffle,1);
+%                     for l = 1:shuffle
+%                         [~,temp] = fit(x',y(randperm(7))','poly1');
+%                         gd(l) = temp.rsquare;
+%                     end
+%                     
+%                     if g.rsquare>prctile(gd,95)
+%                         slope120(i,j,k) = f.p1*1000;
+%                     else
+%                         slope120(i,j,k) = NaN;
+%                     end
+                                        slope120(i,j,k) = f.p1*1000;
                 end
                 
             end
@@ -65,9 +64,10 @@ for i = 1:size(slope120,1)
         end
     end
     toc;
-    fprintf('cell %d\n',i);
+    fprintf('cell %d\n',i);but sum up pos and neg, and the 8th location scaled to cell proportion
+clear;
 end
-save('slope120','slope120');
+save('slope120_gf','slope120');
 
 %%
 clear;
@@ -86,9 +86,6 @@ d2 = 89;
 %%
 clear;
 load('slope300.mat');
-load('dataset_overlapbins_fefdl.mat','st_dl');
-ind = st_dl>1;
-slope = slope(ind,:,:);
 slope(slope==0)=NaN;
 colormap('jet');
 t1 = 3;
@@ -126,8 +123,8 @@ for i = 1:length(location)
     CHIGH = max(CHIGH, max(max(hist)));
 end
 
-% CLOW = 0;
-CLOW = 5;
+CLOW = 0;
+% CLOW = 5;
 CHIGH = 25;
 
 for i = 1:length(location)

@@ -14,8 +14,8 @@ distribution = zeros(size(slope_change{1}));
 % clean
 for i = 1:length(slope_change)
     for j = 1:size(slope_change{i},1)
-        slope_change{i}(j,:) = removeBlacknRed(slope, slope_change{i}(j,:),4,2);
-        %         slope_change{i}(j,(isnan(slope_change{i}(j,:))))= 0;
+%         slope_change{i}(j,:) = removeBlacknRed(slope, slope_change{i}(j,:),4,2);
+                slope_change{i}(j,(isnan(slope_change{i}(j,:))))= 0;
         
         %now just leave the starting and ending points of a change
         %  slope_change{i}(j,:) = removeMid(slope, slope_change{i}(j,:));
